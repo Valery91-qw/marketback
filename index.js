@@ -13,6 +13,8 @@ app.use((req, res, next) => {
 const port = process.env.PORT || 3004
 const {getTotalProduct} = require("./repository/db");
 
+app.use(express.urlencoded({extended: true}))
+app.use(express.json())
 
 app.get("/", async (request, response) => {
     const product = await getTotalProduct()
@@ -22,6 +24,13 @@ app.get("/", async (request, response) => {
         response.sendStatus(404)
     }
 
+})
+
+app.post('/order', async (request, response) => {
+    const {name, productIn} = await request.body
+    const sum = productIn.reduce((acc, cur) => acc + cur.cost * cur.amount,0)
+    let bodyMassage = `dear ${name} you order is ok, be happy, your total cost order is ${sum}`
+    response.send(bodyMassage)
 })
 
 app.listen(port, () => {
